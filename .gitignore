@@ -48,4 +48,4 @@ Thumbs.db
 
 # ──────────────────────────────
 # Optional: ignore lock file
- pnpm-lock.yaml
+pnpm-lock.yaml
