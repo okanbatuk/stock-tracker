@@ -1,6 +1,25 @@
 import { app, config } from "./config";
+import { registerShutdown } from "./utils/shutdown";
+import { SequelizeService } from "./services/sequelize";
 
-app.listen(config.port, (err) => {
-  if (err) throw err;
-  console.log(`🚀 Express listening on http://localhost:${config.port}`);
-});
+// Immediately-invoked async function to bootstrap the server.
+(async () => {
+  try {
+    //Get single instance of db service.
+    const db = SequelizeService.getInstance();
+
+    // Connect to database
+    await db.connect();
+
+    // Start the server
+    const server = app.listen(config.port, () => {
+      console.log(`🚀 Express listening on http://localhost:${config.port}`);
+    });
+
+    // Handlers for close the server and DB
+    registerShutdown(server);
+  } catch (err) {
+    throw err;
+    process.exit(1);
+  }
+})();
