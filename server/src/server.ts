@@ -1,6 +1,6 @@
 import { app, config } from "./config";
-import { registerShutdown } from "./utils/shutdown";
-import { SequelizeService } from "./services/sequelize";
+import { registerShutdown } from "./shared/utils/shutdown";
+import { SequelizeService } from "./shared/services/sequelize";
 
 // Immediately-invoked async function to bootstrap the server.
 (async () => {

@@ -1,4 +1,4 @@
-import { sequelize } from "../config";
+import { sequelize } from "../../config";
 import { IDatabaseService } from "../interfaces/database.service";
 
 export class SequelizeService implements IDatabaseService {
