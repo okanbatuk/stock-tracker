@@ -1,8 +1,9 @@
 import User from "../modules/auth/user.model";
+import Stock from "../modules/stock/stock.model";
 import { RegisterInput } from "../modules/auth/schemas";
 import { IReadRepository, IWriteRepository } from "../shared/interfaces";
 
-export class UserRepository
+export default class UserRepository
   implements IReadRepository<User>, IWriteRepository<User, RegisterInput>
 {
   async findById(id: string | number): Promise<User | null> {
@@ -21,5 +22,17 @@ export class UserRepository
     const [affected] = await User.update(changes, { where: { id } });
     const updated = await User.findAll({ where: { id } });
     return [affected, updated];
+  }
+
+  async getUserStocks(userId: string): Promise<Stock[]> {
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Stock,
+          through: { attributes: [] },
+        },
+      ],
+    });
+    return user?.stocks || [];
   }
 }

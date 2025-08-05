@@ -1,6 +1,14 @@
-import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
-// import PriceAlert from "./PriceAlert";
-// import Watchlist from "./Watchlist";
+import {
+  BelongsToMany,
+  Column,
+  DataType,
+  HasMany,
+  Model,
+  Table,
+} from "sequelize-typescript";
+import Watchlist from "../watchlist/watchlist.model";
+import PriceAlert from "../alert/price-alert.model";
+import Stock from "../stock/stock.model";
 
 @Table({ tableName: "users", timestamps: true })
 export default class User extends Model {
@@ -20,9 +28,12 @@ export default class User extends Model {
   @Column({ type: DataType.STRING, allowNull: false })
   password!: string;
 
-  // @HasMany(() => Watchlist)
-  // watchlists!: Watchlist[];
+  @Column({ type: DataType.DATE, allowNull: true })
+  lastLogin!: Date | null;
 
-  // @HasMany(() => PriceAlert)
-  // priceAlerts!: PriceAlert[];
+  @BelongsToMany(() => Stock, () => Watchlist, "userId", "stockId")
+  stocks!: Stock[];
+
+  @HasMany(() => PriceAlert)
+  priceAlerts!: PriceAlert[];
 }
