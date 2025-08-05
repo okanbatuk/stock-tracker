@@ -1,27 +1,22 @@
 import { z } from "zod";
+import { VAL_MSG } from "../../../shared";
 
 export const updateUserSchema = z
   .object({
     name: z
       .string()
-      .min(3, "First name must be at least 3 characters long")
-      .max(50, "First name must not exceed 50 characters")
+      .min(3, VAL_MSG.MIN("İsim"))
+      .max(50, VAL_MSG.MAX("İsim"))
       .optional(),
     oldPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters long")
-      .regex(
-        /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/,
-        "Password must include at least one uppercase letter, one lowercase letter and one number",
-      )
+      .min(8, VAL_MSG.MIN("Şifre", 8))
+      .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/, VAL_MSG.PASSWORD())
       .optional(),
     newPassword: z
       .string()
-      .min(8, "New password must be at least 8 characters long")
-      .regex(
-        /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/,
-        "New password must include at least one uppercase letter, one lowercase letter and one number",
-      )
+      .min(8, VAL_MSG.MIN("Yeni şifre", 8))
+      .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/, VAL_MSG.PASSWORD("Yeni şifre"))
       .optional(),
   })
   .superRefine((data, ctx) => {
@@ -33,14 +28,14 @@ export const updateUserSchema = z
       if (!oldPassword) {
         ctx.addIssue({
           code: "custom",
-          message: "Current password is required to update your password",
+          message: VAL_MSG.PASSWD_REQ(),
           path: ["oldPassword"],
         });
       }
       if (!newPassword) {
         ctx.addIssue({
           code: "custom",
-          message: "New password is required to update your password",
+          message: VAL_MSG.PASSWD_REQ("yeni"),
           path: ["newPassword"],
         });
       }
@@ -50,7 +45,7 @@ export const updateUserSchema = z
     if (oldPassword === newPassword) {
       ctx.addIssue({
         code: "custom",
-        message: "New password cannot be the same as the current password",
+        message: VAL_MSG.NO_MATCH(),
         path: ["newPassword"],
       });
     }

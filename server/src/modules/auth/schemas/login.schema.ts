@@ -1,15 +1,13 @@
 import { z } from "zod";
+import { VAL_MSG } from "../../../shared";
 
 export const loginSchema = z
   .object({
-    email: z.email({ message: "Please provide a valid email address" }),
+    email: z.email({ message: VAL_MSG.EMAIL() }),
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters long")
-      .regex(
-        /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/,
-        "Password must include at least one uppercase letter, one lowercase letter and one number",
-      ),
+      .min(8, VAL_MSG.MIN("Şifre", 8))
+      .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/, VAL_MSG.PASSWORD()),
   })
   .strict()
   .required();

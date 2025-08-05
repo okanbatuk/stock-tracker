@@ -1,12 +1,18 @@
 import bcrypt from "bcryptjs";
+import jwt, { SignOptions } from "jsonwebtoken";
+import {
+  ConflictError,
+  InternalServerError,
+  RES_MSG,
+  UnauthorizedError,
+} from "../../shared";
 import User from "./user.model";
 import { jwtConfig } from "../../config";
-import jwt, { SignOptions } from "jsonwebtoken";
 import { TokenResponseDto, UserDto } from "./dtos";
 import { JwtConfig, TokenPayload } from "./types/jwt";
 import { normalizeUserFields } from "./utils/normalize-fields";
+import UserRepository from "../../repositories/user.repository";
 import { IAuthService } from "./interfaces/auth.service.interface";
-import { UserRepository } from "../../repositories/user.repository";
 import { LoginInput, RegisterInput, UpdateUserInput } from "./schemas";
 
 export class AuthService implements IAuthService {
@@ -19,7 +25,7 @@ export class AuthService implements IAuthService {
   async register(dto: RegisterInput): Promise<void> {
     const { email, name } = normalizeUserFields(dto);
     const existing = await this.userRepo.findOne({ email });
-    if (existing) throw new Error("Email already in use");
+    if (existing) throw new ConflictError(RES_MSG.DUPLICATE("E-posta"));
 
     const passwordHash = await bcrypt.hash(dto.password, this.saltRounds);
     await this.userRepo.create({ email, name, password: passwordHash });
@@ -29,16 +35,27 @@ export class AuthService implements IAuthService {
     const { email } = normalizeUserFields(data);
     const user = await this.userRepo.findOne({ email });
     if (!user || !(await bcrypt.compare(data.password, user.password)))
-      throw new Error("Invalid credentials");
+      throw new UnauthorizedError(RES_MSG.INVALID_CRED());
 
-    const payload: TokenPayload = { email, sub: user.id };
+    const firstLogin = !user.lastLogin;
+    const payload: TokenPayload = {
+      email: user.email,
+      sub: user.id,
+    };
+    if (firstLogin)
+      await this.userRepo.update(user.id, { lastLogin: new Date() });
+
     const accessToken = jwt.sign(payload, this.cfg.secret, {
       expiresIn: this.cfg.expiresIn,
       issuer: this.cfg.issuer,
       audience: this.cfg.audience,
     } as SignOptions);
 
-    return { accessToken, user: { email: user.email, name: user.name } };
+    return {
+      accessToken,
+      firstLogin,
+      user: { email: user.email, name: user.name },
+    };
   }
 
   async updateProfile(
@@ -48,11 +65,11 @@ export class AuthService implements IAuthService {
     const { name } = normalizeUserFields(data);
     const changes: Partial<User> = { name };
     const user = await this.userRepo.findById(id);
-    if (!user) throw new Error("Something went wrong!");
+    if (!user) throw new InternalServerError(RES_MSG.SERVER());
 
     if (data.newPassword) {
       if (!(await bcrypt.compare(data.oldPassword!, user.password)))
-        throw new Error("Invalid credentials");
+        throw new UnauthorizedError(RES_MSG.INCORRECT());
       changes.password = await bcrypt.hash(data.newPassword, this.saltRounds);
     }
     return this.userRepo.update(id, changes);

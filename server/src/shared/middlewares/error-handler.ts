@@ -1,17 +1,40 @@
-import { ErrorRequestHandler } from "express";
+import { ErrorRequestHandler, response } from "express";
 import { ZodError } from "zod";
+import { ApiResponse, ResponseCode } from "../types";
+import { BaseError } from "../exceptions";
+import { sendResponse } from "../utils";
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
-  // Zod validasyon hatası
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      errors: err.issues.map((issue) => issue.message),
-    });
+  let statusCode = 500;
+  let responseCode = ResponseCode.INTERNAL_SERVER_ERROR;
+  let message = "Beklenmedik bir hata oluştu.";
+  let errors: string[] = [message];
+
+  // Custom Exceptions
+  if (err instanceof BaseError) {
+    statusCode = err.statusCode;
+    responseCode = err.responseCode;
+    message = err.message;
+    errors = [message];
+  }
+  // Zod validation
+  else if (err instanceof ZodError) {
+    statusCode = 400;
+    responseCode = ResponseCode.BAD_REQUEST;
+    message = "Validasyon Hatası";
+    errors = err.issues.map((i) => i.message);
+  }
+  // Other Exceptions
+  else {
+    console.error(err); // logger
   }
 
-  // Diğer tüm hatalar
-  console.error(err);
-  res
-    .status(err.status || 500)
-    .json({ message: err.message || "Internal Server Error" });
+  return sendResponse<ApiResponse>(
+    res,
+    statusCode,
+    responseCode,
+    undefined,
+    message,
+    errors,
+  );
 };
