@@ -5,8 +5,8 @@ import {
   Model,
   Table,
 } from "sequelize-typescript";
-import User from "./User";
-import Stock from "./Stock";
+import User from "../../modules/auth/user.model";
+import Stock from "../stock/stock.model";
 
 @Table({ tableName: "watchlists", timestamps: true })
 export default class Watchlist extends Model {

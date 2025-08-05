@@ -5,7 +5,7 @@ import {
   DataType,
   ForeignKey,
 } from "sequelize-typescript";
-import Stock from "./Stock";
+import Stock from "./stock.model";
 
 @Table({ tableName: "stock_prices", timestamps: true })
 export default class StockPrice extends Model {

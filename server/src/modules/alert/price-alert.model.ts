@@ -5,14 +5,14 @@ import {
   DataType,
   ForeignKey,
 } from "sequelize-typescript";
-import User from "./User";
-import Stock from "./Stock";
+import User from "../auth/user.model";
+import Stock from "../stock/stock.model";
 
 @Table({ tableName: "price_alerts", timestamps: true })
 export default class PriceAlert extends Model {
   @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  userId!: number;
+  @Column({ type: DataType.UUID, allowNull: false })
+  userId!: string;
 
   @ForeignKey(() => Stock)
   @Column({ type: DataType.INTEGER, allowNull: false })
