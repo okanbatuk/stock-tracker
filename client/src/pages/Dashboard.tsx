@@ -80,6 +80,7 @@ export default function Dashboard() {
             <button
               onClick={() => {
                 localStorage.removeItem("token");
+                toast.success("Başarıyla çıkış yaptınız.");
                 navigate("/login");
               }}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
@@ -132,7 +133,7 @@ export default function Dashboard() {
                     <span className="ml-2 text-sm text-slate-600">
                       {s.name}
                     </span>
-                    {s.price !== undefined ? (
+                    {s.price ? (
                       <span
                         className={`ml-4 text-sm font-medium ${
                           s.change! >= 0 ? "text-green-600" : "text-red-600"

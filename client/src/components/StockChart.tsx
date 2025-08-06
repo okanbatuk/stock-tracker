@@ -12,9 +12,7 @@ const StockChart: React.FC<StockChartProps> = ({ symbol, hours = 24 }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/stocks/${symbol}/price-history?hours=${hours}`,
-        );
+        const response = await fetch(`/api/stocks/${symbol}?hours=${hours}`);
         const data = await response.json();
 
         if (response.ok) {

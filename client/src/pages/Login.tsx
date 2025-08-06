@@ -5,7 +5,7 @@ import { login } from "../api/auth";
 type Form = { email: string; password: string };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-const PWD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
+const PWD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}/;
 
 export default function LoginPage() {
   const [form, setForm] = useState<Form>({ email: "", password: "" });

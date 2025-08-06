@@ -7,6 +7,6 @@ const router = Router();
 const controller = new StockController();
 
 router.get("/", controller.getAll);
-router.get("/:symbol/price-history", controller.getPriceHistory);
+router.get("/:symbol", controller.getPriceHistory);
 
 export default router;

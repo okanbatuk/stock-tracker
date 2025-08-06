@@ -5,7 +5,7 @@ import type { RegisterPayload } from "../types/api";
 
 const NAME_REGEX = /^[A-Za-zÇçĞğİıÖöŞşÜü ]{3,50}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-const PWD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
+const PWD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}/;
 
 export default function Register() {
   const [form, setForm] = useState<RegisterPayload>({

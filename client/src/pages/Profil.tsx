@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 
 const NAME_REGEX = /^[A-Za-zÇçĞğİıÖöŞşÜü ]{3,50}$/;
-const PWD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/;
+const PWD_REGEX = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}/;
 
 export default function Profile() {
   const [name, setName] = useState("");
@@ -91,7 +91,8 @@ export default function Profile() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(
-        err.response?.data?.message || "Güncelleme işleminde bir hata oluştu!",
+        err.response?.data?.errors[0] ||
+          "Güncelleme işleminde bir hata oluştu!",
       );
       throw err;
     }
