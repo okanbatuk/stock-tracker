@@ -7,12 +7,12 @@
     "server"
   ],
   "scripts": {
-    "dev": "concurrently -n CLIENT,SERVER -c bgBlue.bold,bgMagenta.bold \"pnpm --filter client dev\" \"pnpm --filter server dev\""
+    "dev": "concurrently -n SERVER,ELECTRON -c bgMagenta.bold,bgCyan.bold \"yarn workspace server dev\" \"yarn workspace client electron-dev\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "yarn@1.22.22",
   "devDependencies": {
     "concurrently": "^9.2.0"
   }

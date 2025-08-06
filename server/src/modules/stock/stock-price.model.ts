@@ -4,6 +4,7 @@ import {
   Model,
   DataType,
   ForeignKey,
+  Default,
 } from "sequelize-typescript";
 import Stock from "./stock.model";
 
@@ -16,6 +17,10 @@ export default class StockPrice extends Model {
   @Column({ type: DataType.FLOAT, allowNull: false })
   price!: number;
 
+  @Column({ type: DataType.FLOAT, allowNull: false })
+  change!: number;
+
+  @Default(DataType.NOW)
   @Column({ type: DataType.DATE, allowNull: false })
   timestamp!: Date;
 }

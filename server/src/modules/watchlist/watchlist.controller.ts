@@ -5,6 +5,7 @@ import WatchlistRepository from "./watchlist.repository";
 import UserRepository from "../../repositories/user.repository";
 import { RES_MSG, ResponseCode, sendResponse } from "../../shared";
 import { ServiceFactory } from "../../shared/factories/service.factory";
+import { symbol } from "zod";
 
 export class WatchlistController {
   private readonly watchlistService: WatchlistService =
@@ -19,11 +20,17 @@ export class WatchlistController {
   get = async (req: Request, res: Response): Promise<Response> => {
     const userId: string = req.user!.id;
     const stocks = await this.watchlistService.getWatchlist(userId);
+    const result = stocks.map((s) => ({
+      id: s.id,
+      symbol: s.symbol,
+      name: s.name,
+      price: s.priceHistory?.[0]?.price ?? null,
+    }));
     return sendResponse(
       res,
       200,
       ResponseCode.OK,
-      stocks,
+      result,
       RES_MSG.ALL("takip edilen hisseler"),
     );
   };

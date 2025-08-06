@@ -1,6 +1,13 @@
 import { Server } from "socket.io";
 import axios from "axios";
 import { PriceUpdatePayload } from "./types";
+import { StockService } from "../stock/stock.service";
+import { ServiceFactory } from "src/shared";
+import StockRepository from "../stock/stock.repository";
+import StockPrice from "../stock/stock-price.model";
+import { StockPriceDto } from "../stock/dtos/stock-price.dto";
+
+const stockService = ServiceFactory.getInstance(StockService, StockRepository);
 
 export const publishPrices = async (io: Server): Promise<void> => {
   try {
@@ -16,6 +23,15 @@ export const publishPrices = async (io: Server): Promise<void> => {
             `https://bigpara.hurriyet.com.tr/api/v1/borsa/hisseyuzeysel/${kod}`,
           );
           const y = res.data.data.hisseYuzeysel;
+          const stock = await stockService.getStockBySymbol(kod);
+          if (stock) {
+            const stockPriceDto: StockPriceDto = {
+              stockId: stock?.id,
+              price: y.satis,
+              change: y.yuzdedegisim,
+            };
+            await stockService.addPriceToStock(stockPriceDto);
+          }
           return {
             symbol: kod,
             price: y.satis,

@@ -1,6 +1,7 @@
 import User from "../modules/auth/user.model";
 import Stock from "../modules/stock/stock.model";
 import { RegisterInput } from "../modules/auth/schemas";
+import StockPrice from "../modules/stock/stock-price.model";
 import { IReadRepository, IWriteRepository } from "../shared/interfaces";
 
 export default class UserRepository
@@ -30,6 +31,15 @@ export default class UserRepository
         {
           model: Stock,
           through: { attributes: [] },
+          include: [
+            {
+              model: StockPrice,
+              attributes: ["price", "change"],
+              separate: true,
+              limit: 1,
+              order: [["timestamp", "DESC"]],
+            },
+          ],
         },
       ],
     });

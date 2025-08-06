@@ -1,7 +1,0 @@
-packages:
-  - server
-  - client
-
-onlyBuiltDependencies:
-  - esbuild
-  - sqlite3
